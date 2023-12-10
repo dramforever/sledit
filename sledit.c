@@ -262,6 +262,8 @@ void edit() {
 
         size_t k = key();
         if (k == ctrl('C')) {
+            emit(CR);
+            emit(LF);
             break;
         } else if (k == ctrl('L')) {
             dump();
