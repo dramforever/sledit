@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 // Terminal IO
@@ -269,6 +270,8 @@ void dump() {
 
 void edit() {
     bottom();
+    dump();
+
     for (;;) {
         draw();
 
@@ -361,5 +364,16 @@ void edit() {
 }
 
 int main() {
+    strcpy(
+        buffer, "Usage:\n"
+                "- Ctrl-C exits the editor\n"
+                "- Ctrl-L prints entire buffer\n"
+                "See README.md for more\n"
+    );
+    startgap = strlen(buffer);
+    line = startgap;
+    cursor = startgap;
+    for (size_t i = 0; buffer[i]; i++)
+        if (buffer[i] == LF) lineno++;
     edit();
 }
