@@ -44,40 +44,53 @@ void emit(uint8_t byte) {
     assert(ret == 1);
 }
 
+struct Escape {
+    char seq[8];
+    size_t key;
+};
+
+// Keep sorted!
+// clang-format off
+static const struct Escape escapes[] = {
+    { "[1;5A", K_CTRL_UP },
+    { "[1;5B", K_CTRL_DOWN },
+    { "[1;5C", K_CTRL_RIGHT },
+    { "[1;5D", K_CTRL_LEFT },
+    { "[1~", K_HOME },
+    { "[3~", K_DELETE },
+    { "[4~", K_END },
+    { "[A", K_UP },
+    { "[B", K_DOWN },
+    { "[C", K_RIGHT },
+    { "[D", K_LEFT },
+    { "", 0 },
+};
+// clang-format on
+
 size_t key() {
     size_t k = rawkey();
     if (k != ESC) return k;
 
-    size_t k1 = rawkey();
-    if (k1 == '[') {
-        size_t k2 = rawkey();
-        if (k2 == 'A') return K_UP;
-        else if (k2 == 'B') return K_DOWN;
-        else if (k2 == 'C') return K_RIGHT;
-        else if (k2 == 'D') return K_LEFT;
-        else if (k2 == '1' || k2 == '3' || k2 == '4') {
-            size_t k3 = rawkey();
-            if (k3 == '~') {
-                if (k2 == '1') return K_HOME;
-                else if (k2 == '4') return K_END;
-                else if (k2 == '3') return K_DELETE;
-                else return 0;
-            } else if (k2 == '1' && k3 == ';') {
-                if (rawkey() != '5') return 0;
-                size_t k5 = rawkey();
-                if (k5 == 'A') return K_CTRL_UP;
-                else if (k5 == 'B') return K_CTRL_DOWN;
-                else if (k5 == 'C') return K_CTRL_RIGHT;
-                else if (k5 == 'D') return K_CTRL_LEFT;
-                else return 0;
-            } else {
+    char seq[8];
+    const struct Escape *cur = escapes;
+
+    for (size_t i = 0;; i++) {
+        seq[i] = rawkey();
+
+        for (;;) {
+            if (!cur->key) return 0;
+
+            int cmp = memcmp(cur->seq, seq, i + 1);
+
+            if (cmp > 0) {
                 return 0;
+            } else if (cmp == 0) {
+                if (cur->seq[i + 1] == 0) return cur->key;
+                else break;
+            } else {
+                cur++;
             }
-        } else {
-            return 0;
         }
-    } else {
-        return 0;
     }
 }
 
