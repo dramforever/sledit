@@ -22,4 +22,5 @@ When run, it expects the terminal to be in "raw mode" with echo off. `make run` 
 - <kbd>Delete</kbd> deletes forward
 - <kbd>Up</kbd> and <kbd>Down</kbd> moves between lines
 - <kbd>Right</kbd> and <kbd>Left</kbd> moves forward and backward one character
+- <kbd>Ctrl-Right</kbd> and <kbd>Ctrl-Left</kbd> moves one word
 - <kbd>Home</kbd> and <kbd>End</kbd> goes to start and end of line

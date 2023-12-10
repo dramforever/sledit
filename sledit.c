@@ -22,6 +22,10 @@ enum Key {
     K_DOWN,
     K_RIGHT,
     K_LEFT,
+    K_CTRL_UP,
+    K_CTRL_DOWN,
+    K_CTRL_RIGHT,
+    K_CTRL_LEFT,
     K_DELETE,
     K_HOME,
     K_END,
@@ -56,6 +60,14 @@ size_t key() {
                 if (k2 == '1') return K_HOME;
                 else if (k2 == '4') return K_END;
                 else if (k2 == '3') return K_DELETE;
+                else return 0;
+            } else if (k2 == '1' && k3 == ';') {
+                if (rawkey() != '5') return 0;
+                size_t k5 = rawkey();
+                if (k5 == 'A') return K_CTRL_UP;
+                else if (k5 == 'B') return K_CTRL_DOWN;
+                else if (k5 == 'C') return K_CTRL_RIGHT;
+                else if (k5 == 'D') return K_CTRL_LEFT;
                 else return 0;
             } else {
                 return 0;
@@ -319,6 +331,28 @@ void edit() {
             nextline();
             if (col > startgap - line) cursor = startgap;
             else cursor = line + col;
+        } else if (k == K_CTRL_LEFT) {
+            if (cursor > line) {
+                do
+                    cursor--;
+                while (cursor > line && buffer[cursor] == ' ');
+                while (cursor > line && buffer[cursor - 1] != ' ')
+                    cursor--;
+            } else if (cursor > 0) {
+                cursor--;
+                prevline();
+            }
+        } else if (k == K_CTRL_RIGHT) {
+            if (cursor < startgap) {
+                do
+                    cursor++;
+                while (cursor < startgap && buffer[cursor] == ' ');
+                while (cursor < startgap && buffer[cursor] != ' ')
+                    cursor++;
+            } else if (endgap < BUFFER_SIZE) {
+                cursor++;
+                nextline();
+            }
         } else if (32 <= k && k < 127) {
             insert(k);
             cursor++;
